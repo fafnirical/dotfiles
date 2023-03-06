@@ -1,0 +1,35 @@
+[alias]
+  filelog = log --patch
+  find = "!git ls-files | grep --ignore-case"
+  find-in-files = grep -I --ignore-case
+  show-default-branch = "!git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'"
+  start = "!git init && git commit --allow-empty -m 'Initial commit'"
+  purge-merged = "!git checkout --quiet main && git branch --merged | egrep -v '^(\\*|(main)$)' | xargs git branch --delete"
+  purge-squashed = "!git checkout --quiet $(git show-default-branch) && git for-each-ref refs/heads/ '--format=%(refname:short)' | while read branch; do mergeBase=$(git merge-base $(git show-default-branch) $branch) && [[ $(git cherry $(git show-default-branch) $(git commit-tree $(git rev-parse $branch\\^{tree}) -p $mergeBase -m _)) == '-'* ]] && git branch --delete --force $branch; done"
+[core]
+  editor = code --wait
+  pager = less -FRX
+[diff]
+  tool = vscode
+[difftool "vscode"]
+  cmd = code --wait --diff $LOCAL $REMOTE
+[fetch]
+  prune = true
+[init]
+  defaultBranch = main
+[merge]
+  autoStash = true
+  tool = vscode
+[mergetool "vscode"]
+  cmd = code --wait $MERGED
+[pull]
+  ff = only
+[push]
+  autoSetupRemote = true
+[rebase]
+  autoStash = true
+[stash]
+  showPatch = true
+
+[include]
+  path = ~/.config/git/config.local
